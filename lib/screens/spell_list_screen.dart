@@ -3,10 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/spell_repository.dart';
 import '../models/spell.dart';
 import '../theme/app_theme.dart';
-import '../utils/app_settings.dart';
 import '../utils/search.dart';
 import '../widgets/filter_section.dart';
 import '../widgets/search_bar.dart';
+import '../widgets/settings_sheet.dart';
 import '../widgets/spell_card.dart';
 import 'spell_detail_screen.dart';
 
@@ -67,33 +67,49 @@ class _SpellListScreenState extends State<SpellListScreen> {
                 // Header
                 Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 12),
+                      left: 12, right: 12, top: 8, bottom: 12),
                   child: Column(
                     children: [
-                      Text(
-                        'Grimorio',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.cinzel(
-                          color: AppColors.gold,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 3,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'PATHFINDER 2E',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.crimsonText(
-                          color: AppColors.goldDim,
-                          fontSize: 12,
-                          letterSpacing: 6,
-                        ),
+                      Row(
+                        children: [
+                          _HeaderIcon(
+                            icon: Icons.arrow_back,
+                            tooltip: 'Voltar',
+                            onTap: () => Navigator.pop(context),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Magias',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.cinzel(
+                                    color: AppColors.gold,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 3,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'PATHFINDER 2E',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.crimsonText(
+                                    color: AppColors.goldDim,
+                                    fontSize: 11,
+                                    letterSpacing: 5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 44),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       Container(
                         height: 1,
-                        margin: const EdgeInsets.symmetric(horizontal: 32),
+                        margin: const EdgeInsets.symmetric(horizontal: 24),
                         color: AppColors.borderGold,
                       ),
                     ],
@@ -125,7 +141,7 @@ class _SpellListScreenState extends State<SpellListScreen> {
                           icon: const Icon(Icons.settings,
                               color: AppColors.gold, size: 22),
                           tooltip: 'Configurações',
-                          onPressed: () => _showSettings(context),
+                          onPressed: () => showAppSettings(context),
                         ),
                       ),
                     ),
@@ -226,154 +242,33 @@ class _SpellListScreenState extends State<SpellListScreen> {
     );
   }
 
-  void _showSettings(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-            child: ValueListenableBuilder<double>(
-              valueListenable: AppSettings.fontScale,
-              builder: (context, scale, _) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: AppColors.borderGold,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'CONFIGURAÇÕES',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.cinzel(
-                        color: AppColors.gold,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Tamanho do texto',
-                          style: GoogleFonts.crimsonText(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '${(scale * 100).round()}%',
-                          style: GoogleFonts.cinzel(
-                            color: AppColors.goldLight,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _ScaleButton(
-                          icon: Icons.remove,
-                          onTap: () {
-                            final next = (scale - AppSettings.step)
-                                .clamp(AppSettings.minScale,
-                                    AppSettings.maxScale);
-                            AppSettings.fontScale.value =
-                                double.parse(next.toStringAsFixed(2));
-                          },
-                        ),
-                        Expanded(
-                          child: Slider(
-                            value: scale,
-                            min: AppSettings.minScale,
-                            max: AppSettings.maxScale,
-                            divisions: ((AppSettings.maxScale -
-                                        AppSettings.minScale) /
-                                    AppSettings.step)
-                                .round(),
-                            activeColor: AppColors.gold,
-                            inactiveColor: AppColors.borderGold,
-                            onChanged: (v) {
-                              AppSettings.fontScale.value =
-                                  double.parse(v.toStringAsFixed(2));
-                            },
-                          ),
-                        ),
-                        _ScaleButton(
-                          icon: Icons.add,
-                          onTap: () {
-                            final next = (scale + AppSettings.step)
-                                .clamp(AppSettings.minScale,
-                                    AppSettings.maxScale);
-                            AppSettings.fontScale.value =
-                                double.parse(next.toStringAsFixed(2));
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          AppSettings.fontScale.value = 1.0;
-                        },
-                        child: Text(
-                          'Restaurar padrão',
-                          style: GoogleFonts.crimsonText(
-                            color: AppColors.goldDim,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
-class _ScaleButton extends StatelessWidget {
+class _HeaderIcon extends StatelessWidget {
   final IconData icon;
+  final String tooltip;
   final VoidCallback onTap;
-  const _ScaleButton({required this.icon, required this.onTap});
+
+  const _HeaderIcon({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return InkResponse(
-      onTap: onTap,
-      radius: 24,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.gold.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.goldDim.withValues(alpha: 0.5)),
-        ),
-        child: Icon(icon, color: AppColors.goldLight, size: 18),
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: AppColors.gold, size: 20),
+        tooltip: tooltip,
+        onPressed: onTap,
       ),
     );
   }

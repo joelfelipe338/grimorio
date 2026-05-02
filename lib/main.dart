@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/spell_list_screen.dart';
+import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 import 'utils/app_settings.dart';
 
@@ -40,7 +40,7 @@ class GrimorioApp extends StatelessWidget {
           },
         );
       },
-      home: const SpellListScreen(),
+      home: const HomeScreen(),
     );
   }
 }
